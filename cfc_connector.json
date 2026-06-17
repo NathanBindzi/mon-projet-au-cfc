@@ -1,0 +1,28 @@
+{
+  "name": "cfc-courriers-sink-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.jdbc.JdbcSinkConnector",
+    "connection.url": "jdbc:mysql://mysql:3306/cfc_db",
+    "connection.username": "root",
+    "connection.password": "root_secret_2026",
+    "topics": "mailsoft.mailsoft.mailsoft",
+    "table.name.format": "courriers",
+    "insert.mode": "upsert",
+    "primary.key.mode": "record_value",
+    "primary.key.fields": "numero_courrier",
+    "schema.evolution": "none",
+    "field.include.list": "mailsoft.mailsoft.mailsoft:numero_courrier,objet_courrier,position,expediteur,destinataire, parcours",
+
+    "transforms": "renameFields,filterDeletes",
+
+    "transforms.filterDeletes.type": "org.apache.kafka.connect.transforms.Filter",
+    "transforms.filterDeletes.predicate": "isDelete",
+
+    "predicates": "isDelete",
+    "predicates.isDelete.type": "org.apache.kafka.connect.transforms.predicates.RecordIsTombstone",
+
+    "transforms.renameFields.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.renameFields.renames": "NUMERO_COURRIER:numero_courrier,OBJET_COURRIER:objet_courrier,POSITION:position,NUMERO_EXPEDITEUR:expediteur,NUMERO_DESTINATAIRE:destinataire, POSITION_STR:parcours",
+    "consumer.override.auto.offset.reset":"latest"
+  }
+}

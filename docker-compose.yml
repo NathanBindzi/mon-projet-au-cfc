@@ -1,0 +1,156 @@
+version: '3.8'
+
+# ================================================
+# PLATEFORME PARTAGÉE DE SUIVI DES FACTURES - CFC
+# Stack : MySQL + Kafka + Debezium + FastAPI + Django
+# ================================================
+
+services:
+
+  # ──────────────────────────────────────
+  # MYSQL (unique, toutes les BD dedans)
+  # Vous créez vos BD via phpMyAdmin local
+  # ──────────────────────────────────────
+  mysql:
+    image: mysql:8.4
+    container_name: cfc_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"          # ← accessible depuis phpMyAdmin local
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --mysql-native-password=ON         # ✅ CORRIGÉ : remplace --default-authentication-plugin (supprimé en MySQL 8.4)
+      # ⚠️ Obligatoire pour Debezium
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --binlog-row-image=FULL
+      - --server-id=1
+    networks:
+      - cfc_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ──────────────────────────────────────
+  # ZOOKEEPER (requis par Kafka)
+  # ──────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: cfc_zookeeper
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME:   2000
+    networks:
+      - cfc_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────
+  # KAFKA
+  # ──────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: cfc_kafka
+    restart: always
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "29092:29092"                                            # ✅ CORRIGÉ : port hôte séparé (était 9092:9092, conflit de listeners)
+    environment:
+      KAFKA_BROKER_ID:                        1
+      KAFKA_ZOOKEEPER_CONNECT:                zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS:             PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092          # ✅ CORRIGÉ : ports différents
+      KAFKA_LISTENERS:                        PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092         # ✅ AJOUTÉ  : bind explicite sur deux ports
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:   PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME:       PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE:        'true'
+    networks:
+      - cfc_network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions",
+             "--bootstrap-server", "localhost:29092"]            # ✅ CORRIGÉ : pointe sur le bon port hôte
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  # ──────────────────────────────────────
+  # KAFKA UI (port 8081 — 8080 pris par phpMyAdmin)
+  # ──────────────────────────────────────
+  kafka_ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: cfc_kafka_ui
+    restart: always
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME:             CFC-Cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER:        zookeeper:2181
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME:           kafka-connect      # ← ajouter
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS:        http://debezium:8083
+    networks:
+      - cfc_network
+
+  # ──────────────────────────────────────
+  # DEBEZIUM
+  # ──────────────────────────────────────
+  debezium:
+    image: quay.io/debezium/connect:3.1
+    container_name: cfc_debezium
+    restart: always
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS:                  kafka:9092
+      GROUP_ID:                           cfc-debezium-group
+      CONFIG_STORAGE_TOPIC:               cfc.debezium.configs
+      OFFSET_STORAGE_TOPIC:               cfc.debezium.offsets.v2
+      STATUS_STORAGE_TOPIC:               cfc.debezium.status
+      CONFIG_STORAGE_REPLICATION_FACTOR:  1
+      OFFSET_STORAGE_REPLICATION_FACTOR:  1
+      STATUS_STORAGE_REPLICATION_FACTOR:  1
+    networks:
+      - cfc_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  # ──────────────────────────────────────
+
+
+# ──────────────────────────────────────
+# VOLUMES
+# ──────────────────────────────────────
+volumes:
+  mysql_data:
+
+# ──────────────────────────────────────
+# RÉSEAU
+# ──────────────────────────────────────
+networks:
+  cfc_network:
+    driver: bridge
