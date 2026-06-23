@@ -7,6 +7,7 @@ import { Page, RoleEnum, ProfilSchema } from "./types";
 import { getRoleLabel, getRoleColor, getInitials } from "./utils";
 import { apiCountAlertesNonLues } from "./api";
 import { NotificationPanel } from "./NotificationPanel";
+import logoCfc from "../../assets/logo_cfc.png";
 
 interface NavItem {
   id: Page;
@@ -65,21 +66,35 @@ export function Sidebar({ currentPage, currentUser, onNavigate, onLogout }: Side
     <>
       <aside
         className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0"
-        style={{ background: "linear-gradient(180deg, #0f1e36 0%, #1a3560 100%)", fontFamily: "'Figtree', sans-serif" }}
+      style={{ background: "linear-gradient(180deg, #4A1E08 0%, #6B2D0E 100%)" }}
       >
-        {/* ── Logo ──────────────────────────────────────────────────────────── */}
+       {/* ── Logo ──────────────────────────────────────────────────────────── */}
         <div className="px-6 py-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center border border-white/20">
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-white font-semibold leading-none"
-                style={{ fontFamily: "'DM Serif Display', serif", fontSize: "1.05rem" }}>
-                SuiFact CFC
-              </p>
-              <p className="text-white/40 text-xs mt-0.5">Suivi des factures</p>
-            </div>
+          
+        
+          <div className="flex flex-col items-center gap-2">
+            
+           
+            <img 
+              src={logoCfc} 
+              alt="Logo Crédit Foncier du Cameroun" 
+              style={{ width: "150px" }} 
+              className="object-contain" 
+            />
+
+            {/* Texte "SuiFact CFC" centré sous le logo */}
+            <p 
+              className="text-white font-semibold leading-none text-center"
+              style={{ fontFamily: "'DM Serif Display', serif", fontSize: "1.05rem" }}
+            >
+               CFC SuiFact
+            </p>
+
+            {/* Sous-titre centré sous "SuiFact CFC" */}
+            <p className="text-white/40 text-xs text-center">
+              Suivi des factures
+            </p>
+
           </div>
         </div>
 

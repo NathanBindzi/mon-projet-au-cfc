@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Lock, Mail, Eye, EyeOff, FileText, AlertCircle } from "lucide-react";
 import { apiLogin, apiGetProfil } from "./api";
 import { ProfilSchema } from "./types";
-
+import logoCfc from "../../assets/logo_cfc.png";
 interface LoginPageProps {
   onLogin: (user: ProfilSchema) => void;
 }
@@ -38,7 +38,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       {/* Left panel */}
       <div
         className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: "linear-gradient(145deg, #0f1e36 0%, #1a3560 60%, #1e4d8c 100%)" }}
+        style={{ background: "linear-gradient(145deg, #3D1505 0%, #6B2D0E 60%, #8B3A0F 100%)" }}
       >
         <div className="absolute inset-0 opacity-10">
           {[...Array(6)].map((_, i) => (
@@ -56,16 +56,20 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           ))}
         </div>
 
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center border border-white/20">
-            <FileText className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-white/90 text-lg tracking-wide" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            CFC — SuiFact
-          </span>
+        {/* Conteneur principal — on garde le positionnement relatif et le z-index */}
+        <div className="relative z-10 flex items-center">
+          
+        
+          <img 
+            src={logoCfc} 
+            alt="Logo Crédit Foncier du Cameroun" 
+            style={{ width: "180px" }}
+            className="object-contain mx-auto" 
+          />
+
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 mx-auto">
           <p className="text-white/40 text-xs uppercase tracking-widest mb-4">Plateforme officielle</p>
           <h1
             className="text-white mb-6 leading-tight"
@@ -73,7 +77,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           >
             Suivi et Gestion
             <br />
-            <span className="text-blue-300">des Factures</span>
+           <span className="text-[#E8820C]">des Factures</span>
           </h1>
           <p className="text-white/60 leading-relaxed max-w-sm" style={{ fontSize: "0.92rem" }}>
             Plateforme Partagée de Suivi des Factures au CFC. 
@@ -165,7 +169,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{ background: "linear-gradient(135deg, #1a3560, #1e63d0)", fontFamily: "'Figtree', sans-serif" }}
+               style={{ background: "linear-gradient(135deg, #6B2D0E, #E8820C)" }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

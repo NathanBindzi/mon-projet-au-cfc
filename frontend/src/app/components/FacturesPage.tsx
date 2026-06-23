@@ -411,7 +411,7 @@ function EBModal({
               onClick={handleSave}
               disabled={saving}
               className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-60"
-              style={{ background: "linear-gradient(135deg, #1a3560, #1e63d0)" }}
+              style={{ background: "linear-gradient(180deg, #4A1E08 0%, #6B2D0E 100%)"  }}
             >
               {saving ? "Enregistrement…" : "Valider la référence"}
             </button>
@@ -470,9 +470,7 @@ function TicketModal({
             <h2 className="text-[#0f1e36] font-bold" style={{ fontSize: "1.1rem" }}>
               Ticket EB
             </h2>
-            <p className="text-[#5f7291] text-xs mt-0.5">
-              PDF généré côté serveur
-            </p>
+            
           </div>
           <button
             onClick={onClose}
@@ -487,7 +485,7 @@ function TicketModal({
           <div className="bg-[#f8fafc] rounded-xl border border-black/6 p-4 mb-5 space-y-2">
 
             {/* Référence EB — élément central du ticket */}
-            <div className="bg-[#1a3560] rounded-lg px-4 py-3 text-center mb-3">
+            <div className="bg-[#6B2D0E] rounded-lg px-4 py-3 text-center mb-3">
               <p className="text-white/60 text-xs uppercase tracking-wider mb-1">Référence EB</p>
               <p className="text-white font-bold font-mono tracking-widest text-lg">
                 {facture.referenceEB ?? "—"}
@@ -529,7 +527,7 @@ function TicketModal({
             onClick={handleTelecharger}
             disabled={dlState === "loading"}
             className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity"
-            style={{ background: "linear-gradient(135deg, #1a3560, #1e63d0)" }}
+            style={{ background: "linear-gradient(135deg, #6B2D0E, #E8820C)" }}
           >
             {dlState === "loading" ? (
               <>
@@ -729,7 +727,7 @@ export function FacturesPage({ currentUser }: FacturesPageProps) {
 
         {/* Compteur de résultats filtrés — affiche le total, pas juste la page */}
         {!loading && (
-          <div className="bg-[#1a3560] text-white text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center gap-1.5">
+          <div className="bg-[#6B2D0E] text-white text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center gap-1.5">
             <span>{filtered.length}</span>
             <span className="text-white/60">résultat{filtered.length > 1 ? "s" : ""}</span>
           </div>

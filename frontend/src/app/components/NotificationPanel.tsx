@@ -154,7 +154,7 @@ export function NotificationPanel({
 
         {/* ── En-tête ──────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-black/8"
-          style={{ background: "linear-gradient(135deg, #0f1e36, #1a3560)" }}>
+          style={{ background: "linear-gradient(180deg, #4A1E08 0%, #6B2D0E 100%)" }}>
           <div className="flex items-center gap-2.5">
             <Bell className="w-4 h-4 text-white" />
             <h2 className="text-white font-bold text-sm">Notifications</h2>

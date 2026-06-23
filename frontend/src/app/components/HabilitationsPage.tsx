@@ -124,7 +124,7 @@ function AddUserModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =
               type="submit"
               disabled={saving}
               className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-60"
-              style={{ background: "linear-gradient(135deg, #1a3560, #1e63d0)" }}
+              style={{ background: "linear-gradient(135deg, #6B2D0E, #E8820C)" }}
             >
               {saving ? "Création…" : "Créer le compte"}
             </button>
@@ -205,7 +205,7 @@ export function HabilitationsPage() {
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold"
-            style={{ background: "linear-gradient(135deg, #1a3560, #1e63d0)" }}
+            style={{ background: "linear-gradient(180deg, #4A1E08 0%, #6B2D0E 100%)" }}
           >
             <Plus className="w-4 h-4" />
             Ajouter un utilisateur
